@@ -107,14 +107,14 @@ class MeasureGoalVC: UIViewController {
 extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return measureGoals.count
+        return currentMeasuredGoals.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "measureGoalCell", for: indexPath) as! MeasureGoalCell
-        cell.dateLabel.text = measureGoals[indexPath.row].date
-        cell.repsLabel.text = String(measureGoals[indexPath.row].reps)
-        totalLabel.text = String(measureGoals[indexPath.row].total)
+        cell.dateLabel.text = currentMeasuredGoals[indexPath.row].date
+        cell.repsLabel.text = String(currentMeasuredGoals[indexPath.row].reps)
+        totalLabel.text = String(currentMeasuredGoals[indexPath.row].total)
         return cell
     }
     
@@ -124,7 +124,7 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                 guard let self = self else { return }
                 
                 // Get the BagDataModel to be deleted
-                let goalMeasurementToDelete = self.measureGoals[indexPath.row]
+                let goalMeasurementToDelete = self.currentMeasuredGoals[indexPath.row]
                 
                 // Fetch BagEntity instances for deletion
                 switch coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goalMeasurementToDelete.id as NSNumber)) {
@@ -134,7 +134,7 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                         coreDataManager.delete(goalMeasurementEntityToDelete)
                         
                         // Update the data source and table view
-                        self.measureGoals.remove(at: indexPath.row)
+                        self.currentMeasuredGoals.remove(at: indexPath.row)
                         self.total = total - goalMeasurementToDelete.reps
                         self.updateProgressBar()
                         tableView.deleteRows(at: [indexPath], with: .automatic)
