@@ -23,8 +23,7 @@ class MeasureGoalVC: UIViewController {
     var currentMeasuredGoals: [MeasureGoal] = []
     var coreDataManager: CoreDataManager!
     var total: Int64 = 0
-    
-    weak var delegate: MeasureGoalDelegate?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,15 +54,16 @@ class MeasureGoalVC: UIViewController {
     }
     
     private func updateProgressBar() {
+        total = 0 
+        
         for reps in currentMeasuredGoals {
             total = total + reps.reps
         }
         
             // Calculate the updated percentage here based on your logic
         let updatedPercentage = (Float(total) / Float(currentGoal.amount))
-
-            // Call the delegate method to update the progress bar in the GoalsListVC
-            delegate?.didUpdateMeasurement(for: currentGoal, with: updatedPercentage)
+        let predicate = NSPredicate(format: "id == %@", currentGoal.id as NSNumber)
+        let result = coreDataManager.update(GoalEntity.self, predicate: predicate, attributeToUpdate: "percentage", newValue: updatedPercentage)
         }
     
     private func getReps() {
@@ -96,8 +96,6 @@ class MeasureGoalVC: UIViewController {
         let vc = UIStoryboard(name: "AddMeasurement", bundle: nil).instantiateViewController(withIdentifier: "addMeasurement") as! AddMeasurementVC
         vc.goal = currentGoal
         vc.total = total
-        let updatedPercentage = (Float(total) / Float(currentGoal.amount))
-        delegate?.didUpdateMeasurement(for: currentGoal, with: updatedPercentage)
         navigationController?.pushViewController(vc, animated: true)
     }
 

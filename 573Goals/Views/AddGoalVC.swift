@@ -57,6 +57,7 @@ class AddGoalVC: UIViewController {
                     newEntity.month = selectedMonth
                     newEntity.name = goalName
                     newEntity.amount = Int64(goalAmount) ?? 0
+                    newEntity.percentage = 0.0
                     coreDataManager.saveContext()
                 }
                 navigationController?.popViewController(animated: true)

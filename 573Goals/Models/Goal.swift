@@ -6,19 +6,29 @@
 //
 
 import UIKit
+import CoreData
 
 
-struct Goal {
-    let id: Int64
-    let month: String
-    let amount: Int64
-    let name: String
+@objc(Goal)
+public class Goal: NSManagedObject {
+    
+    @NSManaged public var id: Int64
+    @NSManaged public var month: String
+    @NSManaged public var amount: Int64
+    @NSManaged public var name: String
+    @NSManaged public var percentage: Float
     
     
-    init(id: Int64, month: String, amount: Int64, name: String) {
-        self.id = id
-        self.month = month
-        self.amount = amount
-        self.name = name
+    class func createInManagedObjectContext(_ context: NSManagedObjectContext, id: Int64, month: String, amount: Int64, name: String, percentage: Float) -> Goal {
+        if let newGoalEntity = NSEntityDescription.insertNewObject(forEntityName: "GoalEntity", into: context) as! GoalEntity {
+            newGoalEntity.id = id
+            newGoalEntity.month = month
+            newGoalEntity.name = name
+            newGoalEntity.amount = Int64(amount) ?? 0
+            newGoalEntity.percentage = percentage
+            
+            return newGoalEntity
+            
+        }
     }
 }

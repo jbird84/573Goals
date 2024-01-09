@@ -14,7 +14,6 @@ struct MeasureGoal {
     let reps: Int64
     let total: Int64
     
-    
     init(id: Int64, date: String, reps: Int64, total: Int64) {
         self.id = id
         self.date = date

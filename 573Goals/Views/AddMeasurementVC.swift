@@ -29,14 +29,16 @@ class AddMeasurementVC: UIViewController {
         let selectedDate = dateFormatter.string(from: datePicker.date)
        
         if let reps = repsLabel.text, !reps.isEmpty {
-                if let newEntity = NSEntityDescription.insertNewObject(forEntityName: "MeasureEntity", into: coreDataManager.managedContext) as? MeasureEntity {
-                    guard let currentGoal = goal else { return }
-                    newEntity.id = currentGoal.id
-                    newEntity.date = selectedDate
-                    newEntity.reps = Int64(reps) ?? 0
-                    newEntity.total = total + (Int64(reps) ?? 0)
-                    coreDataManager.saveContext()
-                }
+            if let newEntity = NSEntityDescription.insertNewObject(forEntityName: "MeasureEntity", into: coreDataManager.managedContext) as? MeasureEntity {
+                guard let currentGoal = goal else { return }
+                newEntity.id = currentGoal.id
+                newEntity.date = selectedDate
+                newEntity.reps = Int64(reps) ?? 0
+                newEntity.total = total + (Int64(reps) ?? 0)
+                
+                coreDataManager.saveContext()
+            }
+            
             navigationController?.popViewController(animated: true)
             } else {
                 K.showAlert(title: "Add Reps Field Empty", message: "Please fill out number of reps to log your goal.", presentingViewController: self)

@@ -62,4 +62,26 @@ class CoreDataManager {
         persistentContainer.viewContext.delete(object)
         saveContext()
     }
+    
+    // MARK: - Update
+        
+    func update<T: NSManagedObject>(_ objectType: T.Type, predicate: NSPredicate, attributeToUpdate: String, newValue: Any) -> Result<Void, Error> {
+        let fetchRequest = NSFetchRequest<T>(entityName: String(describing: objectType))
+        fetchRequest.predicate = predicate
+        
+        do {
+            let objects = try persistentContainer.viewContext.fetch(fetchRequest)
+            if let objectToUpdate = objects.compactMap({ $0 as T? }).first {
+                objectToUpdate.setValue(newValue, forKey: attributeToUpdate)
+                saveContext()
+                return .success(())
+            } else {
+                let error = NSError(domain: "CoreDataManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "Object not found"])
+                throw error
+            }
+        } catch {
+            print("Error updating data: \(error.localizedDescription)")
+            return .failure(error)
+        }
+    }
 }
