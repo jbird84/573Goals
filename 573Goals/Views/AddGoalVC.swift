@@ -52,14 +52,10 @@ class AddGoalVC: UIViewController {
             if let goalName = goalNameLabel.text, !goalName.isEmpty {
                 // Generate a random id
                 let randomId = Int64(arc4random_uniform(UInt32.max))
-                if let newEntity = NSEntityDescription.insertNewObject(forEntityName: "GoalEntity", into: coreDataManager.managedContext) as? GoalEntity {
-                    newEntity.id = randomId
-                    newEntity.month = selectedMonth
-                    newEntity.name = goalName
-                    newEntity.amount = Int64(goalAmount) ?? 0
-                    newEntity.percentage = 0.0
-                    coreDataManager.saveContext()
-                }
+                let newGoalEntity = GoalEntity.createInManagedObjectContext(coreDataManager.managedContext, id: randomId, month: selectedMonth, amount: Int64(goalAmount) ?? 0, name: goalName, percentage: 0.0)
+                
+                coreDataManager.saveContext()
+                
                 navigationController?.popViewController(animated: true)
             } else {
                 K.showAlert(title: "Movement Name Field Empty", message: "Please fill out ALL fields before trying to save your goal.", presentingViewController: self)

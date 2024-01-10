@@ -9,7 +9,7 @@ import UIKit
 import DZNEmptyDataSet
 
 protocol MeasureGoalDelegate: AnyObject {
-    func didUpdateMeasurement(for goal: Goal, with percentage: Float)
+    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float)
 }
 
 class MeasureGoalVC: UIViewController {
@@ -18,7 +18,7 @@ class MeasureGoalVC: UIViewController {
     @IBOutlet weak var totalLabel: UILabel!
     @IBOutlet weak var barNavItem: UINavigationItem!
    
-    var currentGoal: Goal = Goal(id: 0, month: "", amount: 0, name: "")
+    var currentGoal: GoalEntity?
     var measureGoals: [MeasureGoal] = []
     var currentMeasuredGoals: [MeasureGoal] = []
     var coreDataManager: CoreDataManager!
@@ -60,10 +60,13 @@ class MeasureGoalVC: UIViewController {
             total = total + reps.reps
         }
         
+        if let goal = currentGoal {
             // Calculate the updated percentage here based on your logic
-        let updatedPercentage = (Float(total) / Float(currentGoal.amount))
-        let predicate = NSPredicate(format: "id == %@", currentGoal.id as NSNumber)
-        let result = coreDataManager.update(GoalEntity.self, predicate: predicate, attributeToUpdate: "percentage", newValue: updatedPercentage)
+            let updatedPercentage = (Float(total) / Float(goal.amount))
+            let predicate = NSPredicate(format: "id == %@", goal.id as NSNumber)
+            let result = coreDataManager.update(GoalEntity.self, predicate: predicate, attributeToUpdate: "percentage", newValue: updatedPercentage)
+        }
+       
         }
     
     private func getReps() {

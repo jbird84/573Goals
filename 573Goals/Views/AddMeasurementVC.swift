@@ -14,7 +14,7 @@ class AddMeasurementVC: UIViewController {
     @IBOutlet weak var repsLabel: UITextField!
     
     var coreDataManager: CoreDataManager!
-    var goal: Goal?
+    var goal: GoalEntity?
     var total: Int64 = 0
     
     override func viewDidLoad() {

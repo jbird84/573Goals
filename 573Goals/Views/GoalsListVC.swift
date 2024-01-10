@@ -13,7 +13,7 @@ class GoalsListVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var barNavItem: UINavigationItem!
     
-    var goals: [Goal] = []
+    var goals: [GoalEntity] = []
         var coreDataManager: CoreDataManager!
 
         // Add the delegate property
@@ -43,7 +43,7 @@ class GoalsListVC: UIViewController {
             }
         }
 
-        private func getRepsForGoal(_ goal: Goal) -> Int64 {
+        private func getRepsForGoal(_ goal: GoalEntity) -> Int64 {
             let result = coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goal.id as NSNumber))
 
             switch result {
@@ -159,7 +159,7 @@ extension GoalsListVC: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension GoalsListVC: MeasureGoalDelegate {
-    func didUpdateMeasurement(for goal: Goal, with percentage: Float) {
+    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float) {
         if let index = goals.firstIndex(where: { $0.id == goal.id }) {
             let indexPath = IndexPath(row: index, section: 0)
             if let cell = tableView.cellForRow(at: indexPath) as? GoalsListCell {
