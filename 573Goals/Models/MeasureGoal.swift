@@ -6,18 +6,26 @@
 //
 
 import Foundation
+import CoreData
 
-
-struct MeasureGoal {
-    let id: Int64
-    let date: String
-    let reps: Int64
-    let total: Int64
+@objc(MeasureEntity)
+class MeasureEntity: NSManagedObject {
     
-    init(id: Int64, date: String, reps: Int64, total: Int64) {
-        self.id = id
-        self.date = date
-        self.reps = reps
-        self.total = total
+    @NSManaged public var id: Int64
+    @NSManaged public var date: String
+    @NSManaged public var reps: Int64
+    @NSManaged public var total: Int64
+    
+    class func createInManagedObjectContext(_ context: NSManagedObjectContext, id: Int64, date: String, reps: Int64, total: Int64) -> MeasureEntity {
+        let newMeasureEntity = NSEntityDescription.insertNewObject(forEntityName: "GoalEntity", into: context) as! MeasureEntity
+        newMeasureEntity.id = id
+        newMeasureEntity.date = date
+        newMeasureEntity.reps = reps
+        newMeasureEntity.total = Int64(total)
+        
+        return newMeasureEntity
     }
 }
+
+
+

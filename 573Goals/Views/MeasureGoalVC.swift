@@ -19,8 +19,8 @@ class MeasureGoalVC: UIViewController {
     @IBOutlet weak var barNavItem: UINavigationItem!
    
     var currentGoal: GoalEntity?
-    var measureGoals: [MeasureGoal] = []
-    var currentMeasuredGoals: [MeasureGoal] = []
+    var measureGoals: [MeasureEntity] = []
+    var currentMeasuredGoals: [MeasureEntity] = []
     var coreDataManager: CoreDataManager!
     var total: Int64 = 0
 
@@ -75,11 +75,8 @@ class MeasureGoalVC: UIViewController {
         
         switch result {
         case .success(let entities):
-            //convert measureEntity instances to Goal instances
             if !entities.isEmpty {
-                self.measureGoals = entities.map { entity in
-                    return MeasureGoal(id: entity.id, date: entity.date ?? "No data",  reps: entity.reps, total: entity.total)
-                }
+                
                 filterMeasuredGoalsByGoalId()
                 tableView.reloadData()
             }
@@ -91,7 +88,7 @@ class MeasureGoalVC: UIViewController {
     }
     
     private func filterMeasuredGoalsByGoalId() {
-       let goalId = currentGoal.id
+        let goalId = currentGoal?.id
         currentMeasuredGoals = measureGoals.filter { $0.id == goalId }
     }
     

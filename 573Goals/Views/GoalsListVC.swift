@@ -79,9 +79,7 @@ class GoalsListVC: UIViewController {
             switch result {
             case .success(let entities):
                 if !entities.isEmpty {
-                    self.goals = entities.map { entity in
-                        return Goal(id: entity.id, month: entity.month ?? "No Data", amount: entity.amount, name: entity.name ?? "No Data")
-                    }
+                    self.goals = entities
                     tableView.reloadData()
                 }
             case .failure(let error):
