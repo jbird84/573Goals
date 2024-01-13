@@ -8,33 +8,29 @@
 import UIKit
 import DZNEmptyDataSet
 
-protocol MeasureGoalDelegate: AnyObject {
-    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float)
-}
 
 class MeasureGoalVC: UIViewController {
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var totalLabel: UILabel!
     @IBOutlet weak var barNavItem: UINavigationItem!
-   
+    
     var currentGoal: GoalEntity?
     var measureGoals: [MeasureEntity] = []
     var currentMeasuredGoals: [MeasureEntity] = []
     var coreDataManager: CoreDataManager!
     var total: Int64 = 0
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getReps()
-        updateProgressBar()
     }
     
     private func setupView() {
@@ -53,22 +49,6 @@ class MeasureGoalVC: UIViewController {
         tableView.emptyDataSetDelegate = self
     }
     
-    private func updateProgressBar() {
-        total = 0 
-        
-        for reps in currentMeasuredGoals {
-            total = total + reps.reps
-        }
-        
-        if let goal = currentGoal {
-            // Calculate the updated percentage here based on your logic
-            let updatedPercentage = (Float(total) / Float(goal.amount))
-            let predicate = NSPredicate(format: "id == %@", goal.id as NSNumber)
-            let result = coreDataManager.update(GoalEntity.self, predicate: predicate, attributeToUpdate: "percentage", newValue: updatedPercentage)
-        }
-       
-        }
-    
     private func getReps() {
         //fetch entities
         let result = coreDataManager.fetch(MeasureEntity.self)
@@ -76,7 +56,7 @@ class MeasureGoalVC: UIViewController {
         switch result {
         case .success(let entities):
             if !entities.isEmpty {
-                
+                measureGoals = entities
                 filterMeasuredGoalsByGoalId()
                 tableView.reloadData()
             }
@@ -90,6 +70,10 @@ class MeasureGoalVC: UIViewController {
     private func filterMeasuredGoalsByGoalId() {
         let goalId = currentGoal?.id
         currentMeasuredGoals = measureGoals.filter { $0.id == goalId }
+        self.total = 0
+        for current in currentMeasuredGoals {
+            self.total = total + current.reps
+        }
     }
     
     @objc func addMeasurementToGoal() {
@@ -98,7 +82,7 @@ class MeasureGoalVC: UIViewController {
         vc.total = total
         navigationController?.pushViewController(vc, animated: true)
     }
-
+    
 }
 
 
@@ -112,7 +96,7 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "measureGoalCell", for: indexPath) as! MeasureGoalCell
         cell.dateLabel.text = currentMeasuredGoals[indexPath.row].date
         cell.repsLabel.text = String(currentMeasuredGoals[indexPath.row].reps)
-        totalLabel.text = String(currentMeasuredGoals[indexPath.row].total)
+        totalLabel.text = String(total)
         return cell
     }
     
@@ -131,12 +115,16 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                         // Delete the object from Core Data
                         coreDataManager.delete(goalMeasurementEntityToDelete)
                         
-                        // Update the data source and table view
+                        // Update the data source
                         self.currentMeasuredGoals.remove(at: indexPath.row)
-                        self.total = total - goalMeasurementToDelete.reps
-                        self.updateProgressBar()
+                        
+                        self.total = self.total - goalMeasurementToDelete.reps
+                        
+                        // Update the totalLabel.text
+                        self.totalLabel.text = String(self.total)
+                        
+                        // Animate the deletion
                         tableView.deleteRows(at: [indexPath], with: .automatic)
-                        tableView.reloadData()
                     }
                 case .failure(let error):
                     // Handle the error appropriately, e.g., show an alert or log the error

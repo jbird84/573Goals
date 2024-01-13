@@ -17,7 +17,7 @@ class GoalsListVC: UIViewController {
         var coreDataManager: CoreDataManager!
 
         // Add the delegate property
-        weak var delegate: MeasureGoalDelegate?
+       // weak var delegate: MeasureGoalDelegate?
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -32,16 +32,16 @@ class GoalsListVC: UIViewController {
         override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
             getGoals()
-            updateProgressBarsForAllGoals()
+            //updateProgressBarsForAllGoals()
         }
 
-        private func updateProgressBarsForAllGoals() {
-            for goal in goals {
-                //let totalReps = getRepsForGoal(goal)
-                //let updatedPercentage = totalReps > 0 ? Float(totalReps) / Float(goal.amount) : 0.0
-                delegate?.didUpdateMeasurement(for: goal, with: goal.percentage)
-            }
-        }
+//        private func updateProgressBarsForAllGoals() {
+//            for goal in goals {
+//                //let totalReps = getRepsForGoal(goal)
+//                //let updatedPercentage = totalReps > 0 ? Float(totalReps) / Float(goal.amount) : 0.0
+//              //  delegate?.didUpdateMeasurement(for: goal, with: goal.percentage)
+//            }
+//        }
 
         private func getRepsForGoal(_ goal: GoalEntity) -> Int64 {
             let result = coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goal.id as NSNumber))
@@ -66,7 +66,7 @@ class GoalsListVC: UIViewController {
             coreDataManager = appDelegate.coreDataManager
             
             // Set the delegate here
-            delegate = self
+         //   delegate = self
             tableView.dataSource = self
             tableView.delegate = self
             tableView.emptyDataSetSource = self
@@ -156,16 +156,16 @@ extension GoalsListVC: UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension GoalsListVC: MeasureGoalDelegate {
-    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float) {
-        if let index = goals.firstIndex(where: { $0.id == goal.id }) {
-            let indexPath = IndexPath(row: index, section: 0)
-            if let cell = tableView.cellForRow(at: indexPath) as? GoalsListCell {
-                cell.updateProgressBar(with: percentage)
-            }
-        }
-    }
-}
+//extension GoalsListVC: MeasureGoalDelegate {
+//    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float) {
+//        if let index = goals.firstIndex(where: { $0.id == goal.id }) {
+//            let indexPath = IndexPath(row: index, section: 0)
+//            if let cell = tableView.cellForRow(at: indexPath) as? GoalsListCell {
+//                cell.updateProgressBar(with: percentage)
+//            }
+//        }
+//    }
+//}
 
 extension GoalsListVC: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
