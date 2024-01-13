@@ -14,99 +14,75 @@ class GoalsListVC: UIViewController {
     @IBOutlet weak var barNavItem: UINavigationItem!
     
     var goals: [GoalEntity] = []
-        var coreDataManager: CoreDataManager!
+    var coreDataManager: CoreDataManager!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getGoals()
+    }
 
-        // Add the delegate property
-       // weak var delegate: MeasureGoalDelegate?
-
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            setupView()
-            
-            if let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                let sqliteFilePath = documentDirectory.appendingPathComponent("YourCoreDataModel.sqlite").path
-                print("SQLite File Path: \(sqliteFilePath)")
+    
+    private func setupView() {
+        let addNewGoalButton = UIBarButtonItem(image: UIImage(systemName:"plus"), style: .plain, target: self, action: #selector(addNewGoal))
+        barNavItem.rightBarButtonItem = addNewGoalButton
+        title = "My Goals"
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("AppDelegate not found")
+        }
+        coreDataManager = appDelegate.coreDataManager
+        
+        // Set the delegate here
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.emptyDataSetSource = self
+        tableView.emptyDataSetDelegate = self
+    }
+    
+    private func getGoals() {
+        print("GET GOALS")
+        let result = coreDataManager.fetch(GoalEntity.self)
+        
+        switch result {
+        case .success(let entities):
+            if !entities.isEmpty {
+                self.goals = entities
+                tableView.reloadData()
             }
-        }
-
-        override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            getGoals()
-            //updateProgressBarsForAllGoals()
-        }
-
-//        private func updateProgressBarsForAllGoals() {
-//            for goal in goals {
-//                //let totalReps = getRepsForGoal(goal)
-//                //let updatedPercentage = totalReps > 0 ? Float(totalReps) / Float(goal.amount) : 0.0
-//              //  delegate?.didUpdateMeasurement(for: goal, with: goal.percentage)
-//            }
-//        }
-
-        private func getRepsForGoal(_ goal: GoalEntity) -> Int64 {
-            let result = coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goal.id as NSNumber))
-
-            switch result {
-            case .success(let entities):
-                return entities.reduce(0) { $0 + $1.reps }
-            case .failure(let error):
-                print("Error fetching goal measurements for \(goal.name): \(error.localizedDescription)")
-                return 0
-            }
-        }
-
-        private func setupView() {
-            let addNewGoalButton = UIBarButtonItem(image: UIImage(systemName:"plus"), style: .plain, target: self, action: #selector(addNewGoal))
-            barNavItem.rightBarButtonItem = addNewGoalButton
-            title = "My Goals"
-
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                fatalError("AppDelegate not found")
-            }
-            coreDataManager = appDelegate.coreDataManager
-            
-            // Set the delegate here
-         //   delegate = self
-            tableView.dataSource = self
-            tableView.delegate = self
-            tableView.emptyDataSetSource = self
-            tableView.emptyDataSetDelegate = self
-        }
-
-        private func getGoals() {
-            let result = coreDataManager.fetch(GoalEntity.self)
-
-            switch result {
-            case .success(let entities):
-                if !entities.isEmpty {
-                    self.goals = entities
-                    tableView.reloadData()
-                }
-            case .failure(let error):
-                print("Error fetching bags: \(error.localizedDescription)")
-                K.showAlert(title: "Error", message: "Failed to fetch goals. Please try again later.", presentingViewController: self)
-            }
-        }
-
-        @objc func addNewGoal() {
-            let vc = UIStoryboard(name: "AddGoal", bundle: nil).instantiateViewController(withIdentifier: "addGoal") as! AddGoalVC
-            navigationController?.pushViewController(vc, animated: true)
+        case .failure(let error):
+            print("Error fetching bags: \(error.localizedDescription)")
+            K.showAlert(title: "Error", message: "Failed to fetch goals. Please try again later.", presentingViewController: self)
         }
     }
+    
+    @objc func addNewGoal() {
+        let vc = UIStoryboard(name: "AddGoal", bundle: nil).instantiateViewController(withIdentifier: "addGoal") as! AddGoalVC
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
 
 extension GoalsListVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("Number of Rows: \(goals.count)")
         return goals.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("Cell for Row: \(indexPath.row)")
         let cell = tableView.dequeueReusableCell(withIdentifier: "goalsListCell", for: indexPath) as! GoalsListCell
+        print(goals[indexPath.row].id)
         cell.GoalNameLabel.text = goals[indexPath.row].name
         cell.goalAmountLabel.text = String(goals[indexPath.row].amount)
         cell.monthLabel.text = goals[indexPath.row].month
-        
+        let percentage = goals[indexPath.row].percentage
+        cell.updateProgressBar(with: percentage)
         return cell
     }
     
@@ -149,23 +125,11 @@ extension GoalsListVC: UITableViewDelegate, UITableViewDataSource {
         let storyboard = UIStoryboard(name: "MeasureGoal", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "measureGoalVC") as? MeasureGoalVC {
             vc.currentGoal = goal
-           // vc.delegate = self // Set the delegate
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
 }
 
-//extension GoalsListVC: MeasureGoalDelegate {
-//    func didUpdateMeasurement(for goal: GoalEntity, with percentage: Float) {
-//        if let index = goals.firstIndex(where: { $0.id == goal.id }) {
-//            let indexPath = IndexPath(row: index, section: 0)
-//            if let cell = tableView.cellForRow(at: indexPath) as? GoalsListCell {
-//                cell.updateProgressBar(with: percentage)
-//            }
-//        }
-//    }
-//}
 
 extension GoalsListVC: DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     

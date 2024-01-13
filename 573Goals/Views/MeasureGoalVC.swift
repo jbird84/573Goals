@@ -102,29 +102,54 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            K.showAlertWithDeleteAction(title: "Selected Goal  Measurement Will Be Deleted", message: "Are you sure you want to delete this measurement?", presentingViewController: self) { [weak self] _ in
+            K.showAlertWithDeleteAction(title: "Selected Goal Measurement Will Be Deleted", message: "Are you sure you want to delete this measurement?", presentingViewController: self) { [weak self] _ in
                 guard let self = self else { return }
                 
-                // Get the BagDataModel to be deleted
+                // Get the MeasureEntity to be deleted
                 let goalMeasurementToDelete = self.currentMeasuredGoals[indexPath.row]
                 
-                // Fetch BagEntity instances for deletion
+                // Fetch MeasureEntity instances for deletion
                 switch coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goalMeasurementToDelete.id as NSNumber)) {
                 case .success(let measurementEntities):
                     if let goalMeasurementEntityToDelete = measurementEntities.first {
-                        // Delete the object from Core Data
-                        coreDataManager.delete(goalMeasurementEntityToDelete)
+                        // Calculate the deleted percentage
+                        let deletedPercentage: Float = (Float(goalMeasurementToDelete.reps) / Float(self.currentGoal?.amount ?? 0)) * 100.0
                         
-                        // Update the data source
-                        self.currentMeasuredGoals.remove(at: indexPath.row)
                         
-                        self.total = self.total - goalMeasurementToDelete.reps
-                        
-                        // Update the totalLabel.text
-                        self.totalLabel.text = String(self.total)
-                        
-                        // Animate the deletion
-                        tableView.deleteRows(at: [indexPath], with: .automatic)
+                        // Fetch the existing GoalEntity
+                        guard let goal = currentGoal else { return }
+                        let currentGoalId: Int64 = goal.id
+                        let result = coreDataManager.fetch(GoalEntity.self, predicate: NSPredicate(format: "id == %@", currentGoalId as NSNumber))
+
+                        switch result {
+                        case .success(let goals):
+                            guard let existingGoal = goals.first else {
+                                return
+                            }
+                            
+                            // Update the existing GoalEntity's percentage
+                            existingGoal.percentage = goal.percentage - deletedPercentage
+                            
+                            // Delete the object from Core Data
+                            coreDataManager.delete(goalMeasurementEntityToDelete)
+                            
+                            // Update the data source
+                            self.currentMeasuredGoals.remove(at: indexPath.row)
+                            
+                            self.total = self.total - goalMeasurementToDelete.reps
+                            
+                            // Update the totalLabel.text
+                            self.totalLabel.text = String(self.total)
+                            
+                            // Animate the deletion
+                            tableView.deleteRows(at: [indexPath], with: .automatic)
+                            
+                            // Save the context
+                            coreDataManager.saveContext()
+                        case .failure(let error):
+                            // Handle the error appropriately
+                            print("Error fetching goal entities: \(error.localizedDescription)")
+                        }
                     }
                 case .failure(let error):
                     // Handle the error appropriately, e.g., show an alert or log the error

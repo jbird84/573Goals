@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class AddMeasurementVC: UIViewController {
-
+    
     @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var repsLabel: UITextField!
     
@@ -19,25 +19,47 @@ class AddMeasurementVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-       setupView()
+        
+        setupView()
     }
     
     @IBAction func saveRepsButtonPressed(_ sender: Any) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMMM d, yyyy"
         let selectedDate = dateFormatter.string(from: datePicker.date)
-       
+        
         if let reps = repsLabel.text, !reps.isEmpty {
             guard let currentGoal = goal else { return }
             let currentGoalId: Int64 = currentGoal.id
-            let newMeasurementEntity = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: selectedDate, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
-          
-            coreDataManager.saveContext()
-            navigationController?.popViewController(animated: true)
-            } else {
-                K.showAlert(title: "Add Reps Field Empty", message: "Please fill out number of reps to log your goal.", presentingViewController: self)
+            
+            // Fetch the existing GoalEntity
+            let result = coreDataManager.fetch(GoalEntity.self, predicate: NSPredicate(format: "id == %@", currentGoalId as NSNumber))
+            
+            switch result {
+            case .success(let goals):
+                guard let existingGoal = goals.first else {
+                    return
+                }
+                
+                // Update the MeasureEntity
+                let newMeasurementEntity = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: selectedDate, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
+                
+                // Update the GoalEntity's percentage
+                let currentPercentage: Float = (Float(reps) ?? 0.0) / Float(currentGoal.amount) * 100.0
+                existingGoal.percentage += currentPercentage
+                
+                // Save the context
+                coreDataManager.saveContext()
+                
+                navigationController?.popViewController(animated: true)
+                
+            case .failure(let error):
+                print("Error fetching goal entities: \(error.localizedDescription)")
+                // Handle the error appropriately
             }
+        } else {
+            K.showAlert(title: "Add Reps Field Empty", message: "Please fill out the number of reps to log your goal.", presentingViewController: self)
+        }
     }
     
     private func setupView() {
@@ -49,5 +71,5 @@ class AddMeasurementVC: UIViewController {
         }
         coreDataManager = appDelegate.coreDataManager
     }
-
+    
 }

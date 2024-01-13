@@ -24,15 +24,16 @@ class GoalsListCell: UITableViewCell {
     }
     
     func updateProgressBar(with percentage: Float) {
-        progressBar.setProgress(percentage, animated: true)
-        progressPercentageLabel.text = String(format: "%.0f%%", percentage * 100)
+        let normalizedPercentage = percentage / 100.0
+        progressBar.setProgress(normalizedPercentage, animated: true)
+        progressPercentageLabel.text = String(format: "%.0f%%", percentage)
         
         // Set progress bar color based on the percentage
-        if percentage <= 0.25 {
+        if normalizedPercentage <= 0.25 {
             progressBar.progressTintColor = .red
-        } else if percentage <= 0.5 {
+        } else if normalizedPercentage <= 0.5 {
             progressBar.progressTintColor = .orange
-        } else if percentage <= 0.75 {
+        } else if normalizedPercentage <= 0.75 {
             progressBar.progressTintColor = .yellow
         } else {
             progressBar.progressTintColor = .green
