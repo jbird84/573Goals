@@ -19,6 +19,10 @@ class GoalsListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        
+        if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            print("Documents Directory: \(documentsDirectory.path)")
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

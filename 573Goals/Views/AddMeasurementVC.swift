@@ -42,7 +42,7 @@ class AddMeasurementVC: UIViewController {
                 }
                 
                 // Update the MeasureEntity
-                let newMeasurementEntity = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: selectedDate, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
+                _ = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: selectedDate, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
                 
                 // Update the GoalEntity's percentage
                 let currentPercentage: Float = (Float(reps) ?? 0.0) / Float(currentGoal.amount) * 100.0
