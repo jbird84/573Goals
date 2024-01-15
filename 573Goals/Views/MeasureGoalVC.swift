@@ -70,10 +70,11 @@ class MeasureGoalVC: UIViewController {
     private func filterMeasuredGoalsByGoalId() {
         let goalId = currentGoal?.id
         currentMeasuredGoals = measureGoals.filter { $0.id == goalId }
-        self.total = 0
-        for current in currentMeasuredGoals {
-            self.total = total + current.reps
-        }
+        
+        // Sort currentMeasuredGoals based on date in ascending order
+        currentMeasuredGoals.sort { $0.date.compare($1.date) == .orderedAscending }
+        
+        self.total = currentMeasuredGoals.reduce(0) { $0 + $1.reps }
     }
     
     @objc func addMeasurementToGoal() {
@@ -94,7 +95,10 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "measureGoalCell", for: indexPath) as! MeasureGoalCell
-        cell.dateLabel.text = currentMeasuredGoals[indexPath.row].date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM d, yyyy"
+        let selectedDate = dateFormatter.string(from: currentMeasuredGoals[indexPath.row].date)
+        cell.dateLabel.text = selectedDate
         cell.repsLabel.text = String(currentMeasuredGoals[indexPath.row].reps)
         totalLabel.text = String(total)
         return cell
@@ -112,26 +116,34 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                 switch coreDataManager.fetch(MeasureEntity.self, predicate: NSPredicate(format: "id == %@", goalMeasurementToDelete.id as NSNumber)) {
                 case .success(let measurementEntities):
                     if let goalMeasurementEntityToDelete = measurementEntities.first {
+                        
+                        print("Fetched Goal Measurement Entity: \(goalMeasurementEntityToDelete)")
                         // Calculate the deleted percentage
                         let deletedPercentage: Float = (Float(goalMeasurementToDelete.reps) / Float(self.currentGoal?.amount ?? 0)) * 100.0
                         
-                        
                         // Fetch the existing GoalEntity
-                        guard let goal = currentGoal else { return }
+                        guard let goal = self.currentGoal else { return }
                         let currentGoalId: Int64 = goal.id
                         let result = coreDataManager.fetch(GoalEntity.self, predicate: NSPredicate(format: "id == %@", currentGoalId as NSNumber))
-
+                        
                         switch result {
                         case .success(let goals):
                             guard let existingGoal = goals.first else {
+                                print("Existing Goal not found")
                                 return
                             }
                             
                             // Update the existing GoalEntity's percentage
                             existingGoal.percentage = goal.percentage - deletedPercentage
+                            print("Updated Goal Percentage: \(existingGoal.percentage)")
+                            
+                            // Save the context before deletion
+                            self.coreDataManager.saveContext()
+                            print("Goal Measurement Entity Deleted")
                             
                             // Delete the object from Core Data
                             coreDataManager.delete(goalMeasurementEntityToDelete)
+                            print("Goal Measurement Entity Deleted")
                             
                             // Update the data source
                             self.currentMeasuredGoals.remove(at: indexPath.row)
@@ -143,9 +155,6 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                             
                             // Animate the deletion
                             tableView.deleteRows(at: [indexPath], with: .automatic)
-                            
-                            // Save the context
-                            coreDataManager.saveContext()
                         case .failure(let error):
                             // Handle the error appropriately
                             print("Error fetching goal entities: \(error.localizedDescription)")

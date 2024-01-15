@@ -24,9 +24,6 @@ class AddMeasurementVC: UIViewController {
     }
     
     @IBAction func saveRepsButtonPressed(_ sender: Any) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM d, yyyy"
-        let selectedDate = dateFormatter.string(from: datePicker.date)
         
         if let reps = repsLabel.text, !reps.isEmpty {
             guard let currentGoal = goal else { return }
@@ -42,7 +39,7 @@ class AddMeasurementVC: UIViewController {
                 }
                 
                 // Update the MeasureEntity
-                _ = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: selectedDate, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
+                _ = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: datePicker.date, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
                 
                 // Update the GoalEntity's percentage
                 let currentPercentage: Float = (Float(reps) ?? 0.0) / Float(currentGoal.amount) * 100.0
