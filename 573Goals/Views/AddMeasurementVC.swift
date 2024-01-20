@@ -43,7 +43,11 @@ class AddMeasurementVC: UIViewController {
                 
                 // Update the GoalEntity's percentage
                 let currentPercentage: Float = (Float(reps) ?? 0.0) / Float(currentGoal.amount) * 100.0
-                existingGoal.percentage += currentPercentage
+                
+                // Round the percentage to two decimal places (adjust as needed)
+                let roundedPercentage = round(currentPercentage * 100) / 100
+
+                existingGoal.percentage += roundedPercentage
                 
                 // Save the context
                 coreDataManager.saveContext()

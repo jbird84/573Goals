@@ -27,6 +27,8 @@
 		DA1573522B45C99300BA4256 /* MeasureGoalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1573512B45C99300BA4256 /* MeasureGoalCell.swift */; };
 		DA1573542B45CEFD00BA4256 /* AddMeasurement.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA1573532B45CEFD00BA4256 /* AddMeasurement.storyboard */; };
 		DA1573562B45D9CD00BA4256 /* AddMeasurementVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1573552B45D9CD00BA4256 /* AddMeasurementVC.swift */; };
+		DA7806C62B55EABB00C94E58 /* EditMeasurement.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7806C52B55EABB00C94E58 /* EditMeasurement.storyboard */; };
+		DA7806C82B55EC8D00C94E58 /* EditMeasureGoalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7806C72B55EC8D00C94E58 /* EditMeasureGoalVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,8 @@
 		DA1573512B45C99300BA4256 /* MeasureGoalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureGoalCell.swift; sourceTree = "<group>"; };
 		DA1573532B45CEFD00BA4256 /* AddMeasurement.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddMeasurement.storyboard; sourceTree = "<group>"; };
 		DA1573552B45D9CD00BA4256 /* AddMeasurementVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMeasurementVC.swift; sourceTree = "<group>"; };
+		DA7806C52B55EABB00C94E58 /* EditMeasurement.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = EditMeasurement.storyboard; sourceTree = "<group>"; };
+		DA7806C72B55EC8D00C94E58 /* EditMeasureGoalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMeasureGoalVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +121,7 @@
 				DA1573372B459D5100BA4256 /* AddGoalVC.swift */,
 				DA15734D2B45C67200BA4256 /* MeasureGoalVC.swift */,
 				DA1573552B45D9CD00BA4256 /* AddMeasurementVC.swift */,
+				DA7806C72B55EC8D00C94E58 /* EditMeasureGoalVC.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -153,6 +158,7 @@
 				DA1573252B45995E00BA4256 /* Main.storyboard */,
 				DA15734B2B45C65B00BA4256 /* MeasureGoal.storyboard */,
 				DA1573532B45CEFD00BA4256 /* AddMeasurement.storyboard */,
+				DA7806C52B55EABB00C94E58 /* EditMeasurement.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -229,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA15732C2B45995F00BA4256 /* LaunchScreen.storyboard in Resources */,
+				DA7806C62B55EABB00C94E58 /* EditMeasurement.storyboard in Resources */,
 				DA15734C2B45C65B00BA4256 /* MeasureGoal.storyboard in Resources */,
 				DA15733A2B459DC300BA4256 /* AddGoal.storyboard in Resources */,
 				DA1573542B45CEFD00BA4256 /* AddMeasurement.storyboard in Resources */,
@@ -254,6 +261,7 @@
 				DA1573202B45995E00BA4256 /* AppDelegate.swift in Sources */,
 				DA15734E2B45C67200BA4256 /* MeasureGoalVC.swift in Sources */,
 				DA15733D2B45A2F400BA4256 /* Goal.swift in Sources */,
+				DA7806C82B55EC8D00C94E58 /* EditMeasureGoalVC.swift in Sources */,
 				DA1573562B45D9CD00BA4256 /* AddMeasurementVC.swift in Sources */,
 				DA1573462B45B31100BA4256 /* CoreDataManager.swift in Sources */,
 				DA1573222B45995E00BA4256 /* SceneDelegate.swift in Sources */,
@@ -407,7 +415,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = R7SHSK6MNC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = 573Goals/Info.plist;
@@ -437,7 +445,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = R7SHSK6MNC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = 573Goals/Info.plist;

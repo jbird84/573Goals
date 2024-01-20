@@ -104,6 +104,19 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let mg = currentMeasuredGoals[indexPath.item]
+        print(mg.reps)
+        let storyboard = UIStoryboard(name: "EditMeasurement", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "EditMeasureGoalVC") as? EditMeasureGoalVC {
+            vc.measureGoal = mg
+            vc.total = total
+            vc.goal = currentGoal
+            navigationController?.pushViewController(vc, animated: true)
+        }
+
+    }
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             K.showAlertWithDeleteAction(title: "Selected Goal Measurement Will Be Deleted", message: "Are you sure you want to delete this measurement?", presentingViewController: self) { [weak self] _ in
@@ -133,8 +146,12 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                                 return
                             }
                             
+                            // Round the percentage to two decimal places (adjust as needed)
+                            let roundedPercentage = round(deletedPercentage * 100) / 100
+                            
+                            
                             // Update the existing GoalEntity's percentage
-                            existingGoal.percentage = goal.percentage - deletedPercentage
+                            existingGoal.percentage = goal.percentage - roundedPercentage
                             print("Updated Goal Percentage: \(existingGoal.percentage)")
                             
                             // Save the context before deletion
