@@ -51,8 +51,8 @@ class AddGoalVC: UIViewController {
         if let goalAmount = goalAmountLabel.text, !goalAmount.isEmpty {
             if let goalName = goalNameLabel.text, !goalName.isEmpty {
                 // Generate a random id
-                let randomId = Int64(arc4random_uniform(UInt32.max))
-                let _ = GoalEntity.createInManagedObjectContext(coreDataManager.managedContext, id: randomId, month: selectedMonth, amount: Int64(goalAmount) ?? 0, name: goalName, percentage: 0.0)
+                let randomId = Double(arc4random_uniform(UInt32.max))
+                let _ = GoalEntity.createInManagedObjectContext(coreDataManager.managedContext, id: randomId, month: selectedMonth, amount: Double(goalAmount) ?? 0, name: goalName, percentage: 0.0)
                 
                 coreDataManager.saveContext()
                 

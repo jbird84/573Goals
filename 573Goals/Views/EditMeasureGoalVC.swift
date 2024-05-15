@@ -14,7 +14,7 @@ class EditMeasureGoalVC: UIViewController {
     
     var measureGoal: MeasureEntity?
     var goal: GoalEntity?
-    var total: Int64 = 0
+    var total: Double = 0
     
     var coreDataManager: CoreDataManager!
     
@@ -39,14 +39,14 @@ class EditMeasureGoalVC: UIViewController {
     
     @IBAction func updateRepsButtonPressed(_ sender: Any) {
         guard let currentGoal = goal, let selectedMeasure = measureGoal else { return }
-        let _: Int64 = currentGoal.id
+        let _: Double = currentGoal.id
         
         // Calculate the previous percentage contribution of the old reps
         let previousPercentage: Float = Float(selectedMeasure.reps) / Float(currentGoal.amount) * 100.0
         
         // Update the MeasureEntity
-        selectedMeasure.reps = Int64(repsTextField.text ?? "") ?? 0
-        selectedMeasure.total = total + (Int64(repsTextField.text ?? "") ?? 0)
+        selectedMeasure.reps = Double(repsTextField.text ?? "") ?? 0
+        selectedMeasure.total = total + (Double(repsTextField.text ?? "") ?? 0)
         selectedMeasure.date = datePicker.date
         
         // Calculate the new percentage contribution of the new reps

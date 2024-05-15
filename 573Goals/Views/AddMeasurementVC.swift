@@ -15,7 +15,7 @@ class AddMeasurementVC: UIViewController {
     
     var coreDataManager: CoreDataManager!
     var goal: GoalEntity?
-    var total: Int64 = 0
+    var total: Double = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +27,7 @@ class AddMeasurementVC: UIViewController {
         
         if let reps = repsLabel.text, !reps.isEmpty {
             guard let currentGoal = goal else { return }
-            let currentGoalId: Int64 = currentGoal.id
+            let currentGoalId: Double = currentGoal.id
             
             // Fetch the existing GoalEntity
             let result = coreDataManager.fetch(GoalEntity.self, predicate: NSPredicate(format: "id == %@", currentGoalId as NSNumber))
@@ -38,11 +38,14 @@ class AddMeasurementVC: UIViewController {
                     return
                 }
                 
+                //Round the reps value to one decimal place
+                let roundedReps = roundStringToDouble(reps) ?? 0
+                
                 // Update the MeasureEntity
-                _ = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: datePicker.date, reps: Int64(reps) ?? 0, total: total + (Int64(reps) ?? 0))
+                _ = MeasureEntity.createInManagedObjectContext(coreDataManager.managedContext, id: currentGoalId, date: datePicker.date, reps: Double(roundedReps), total: total + (Double(roundedReps)))
                 
                 // Update the GoalEntity's percentage
-                let currentPercentage: Float = (Float(reps) ?? 0.0) / Float(currentGoal.amount) * 100.0
+                let currentPercentage: Float = (Float(roundedReps)) / Float(currentGoal.amount) * 100.0
                 
                 // Round the percentage to two decimal places (adjust as needed)
                 let roundedPercentage = round(currentPercentage * 100) / 100
@@ -73,4 +76,10 @@ class AddMeasurementVC: UIViewController {
         coreDataManager = appDelegate.coreDataManager
     }
     
+    func roundStringToDouble(_ str: String) -> Double? {
+        let decimalNumber = NSDecimalNumber(string: str)
+        let roundingBehavior = NSDecimalNumberHandler(roundingMode: .plain, scale: 1, raiseOnExactness: false, raiseOnOverflow: false, raiseOnUnderflow: false, raiseOnDivideByZero: false)
+        let roundedNumber = decimalNumber.rounding(accordingToBehavior: roundingBehavior)
+        return roundedNumber.doubleValue
+    }
 }

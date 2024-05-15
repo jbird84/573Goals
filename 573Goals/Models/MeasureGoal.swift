@@ -11,17 +11,17 @@ import CoreData
 @objc(MeasureEntity)
 class MeasureEntity: NSManagedObject {
     
-    @NSManaged public var id: Int64
+    @NSManaged public var id: Double
     @NSManaged public var date: Date
-    @NSManaged public var reps: Int64
-    @NSManaged public var total: Int64
+    @NSManaged public var reps: Double
+    @NSManaged public var total: Double
     
-    class func createInManagedObjectContext(_ context: NSManagedObjectContext, id: Int64, date: Date, reps: Int64, total: Int64) -> MeasureEntity {
+    class func createInManagedObjectContext(_ context: NSManagedObjectContext, id: Double, date: Date, reps: Double, total: Double) -> MeasureEntity {
         let newMeasureEntity = NSEntityDescription.insertNewObject(forEntityName: "MeasureEntity", into: context) as! MeasureEntity
         newMeasureEntity.id = id
         newMeasureEntity.date = date
         newMeasureEntity.reps = reps
-        newMeasureEntity.total = Int64(total)
+        newMeasureEntity.total = Double(total)
         
         return newMeasureEntity
     }

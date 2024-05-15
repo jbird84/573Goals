@@ -19,7 +19,7 @@ class MeasureGoalVC: UIViewController {
     var measureGoals: [MeasureEntity] = []
     var currentMeasuredGoals: [MeasureEntity] = []
     var coreDataManager: CoreDataManager!
-    var total: Int64 = 0
+    var total: Double = 0
     
     
     override func viewDidLoad() {
@@ -136,7 +136,7 @@ extension MeasureGoalVC: UITableViewDelegate, UITableViewDataSource {
                         
                         // Fetch the existing GoalEntity
                         guard let goal = self.currentGoal else { return }
-                        let currentGoalId: Int64 = goal.id
+                        let currentGoalId: Double = goal.id
                         let result = coreDataManager.fetch(GoalEntity.self, predicate: NSPredicate(format: "id == %@", currentGoalId as NSNumber))
                         
                         switch result {
